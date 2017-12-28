@@ -76,3 +76,18 @@ func setCsp() {
 
 	params.Csp = strings.Join(csp, "; ")
 }
+
+// CheckExit - Проверяем надо ли выходить
+func CheckExit() bool {
+	return exited
+}
+
+// StartRq - Отмечаем что идет запрос
+func StartRq(i int) {
+	wg.Add(i)
+}
+
+// EndRq - отмечаем что запрос закончился
+func EndRq() {
+	wg.Done()
+}
