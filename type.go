@@ -12,14 +12,15 @@ const (
 
 // Param это переменные для инициализации класса
 type Param struct {
-	Port       int
-	Route      func(*Obj)
-	MaxArgLeg  int
-	YateScript string
-	NodeScript string
-	Cookie     Cookie
-	CspMap     map[string]string
-	Csp        string
+	Port         int
+	Route        func(*Obj)
+	MaxArgLeg    int
+	YateScript   string
+	NodeScript   string
+	Cookie       Cookie
+	CspMap       map[string]string
+	Csp          string
+	ParseRequest func(http.ResponseWriter, *http.Request)
 }
 
 // Cookie - Объект с описание кукисов

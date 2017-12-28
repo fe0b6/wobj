@@ -10,7 +10,11 @@ import (
 // Начитаем слушать порт
 func listen(port int) {
 
-	http.HandleFunc("/", parseRequest)
+	if params.ParseRequest == nil {
+		http.HandleFunc("/", parseRequest)
+	} else {
+		http.HandleFunc("/", params.ParseRequest)
+	}
 
 	log.Fatalln("[fatal]", http.ListenAndServe(":"+strconv.Itoa(port), nil))
 }
