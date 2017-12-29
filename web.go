@@ -34,7 +34,7 @@ func parseRequest(w http.ResponseWriter, r *http.Request) {
 	// По завершению запроса отмечаем что он закончился
 	defer wg.Done()
 
-	o := &Obj{R: r, W: w, TimeStart: time.Now()}
+	o := &Obj{R: r, W: w, TimeStart: time.Now(), Cache: make(map[string]interface{})}
 	params.Route(o)
 }
 

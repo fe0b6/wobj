@@ -39,6 +39,7 @@ type Obj struct {
 	TimeStart  time.Time
 	Ans        Answer
 	AppendFunc func(*Obj, map[string]interface{}) map[string]interface{}
+	Cache      map[string]interface{}
 	Debug      bool
 }
 
