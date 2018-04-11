@@ -31,6 +31,23 @@ func (wo *Obj) Tmpl() (str string, err error) {
 		o = map[string]interface{}{"data": wo.Ans.Data}
 	}
 
+	// Если ответ JSON
+	if wo.Ans.IsJSON {
+		var js []byte
+		if len(wo.Ans.Path) > 0 {
+			js, err = json.Marshal(o)
+		} else {
+			js, err = json.Marshal(wo.Ans.Data)
+		}
+		if err != nil {
+			log.Println("[error]", err)
+			return
+		}
+
+		str = string(js)
+		return
+	}
+
 	// Если это не js - добавляем контент
 	if !wo.isJs() {
 		o = map[string]interface{}{"content": o}
@@ -58,7 +75,7 @@ func (wo *Obj) Tmpl() (str string, err error) {
 	}
 
 	// Если это js - не шаблонизируем
-	if wo.isJs() || wo.Ans.IsJSON {
+	if wo.isJs() {
 		str = string(js)
 		return
 	}
