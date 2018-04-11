@@ -41,6 +41,7 @@ type Obj struct {
 	AppendFunc func(*Obj, map[string]interface{}) map[string]interface{}
 	Cache      map[string]interface{}
 	Debug      bool
+	IsJSON     bool
 }
 
 // Answer объект содержащий ответ
