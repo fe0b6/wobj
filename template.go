@@ -11,7 +11,7 @@ import (
 
 // Проверяем JS запрос или нет
 func (wo *Obj) isJs() (ok bool) {
-	if wo.IsJSON || wo.R.FormValue("js") == "1" {
+	if wo.R.FormValue("js") == "1" {
 		ok = true
 	}
 	return
@@ -58,7 +58,7 @@ func (wo *Obj) Tmpl() (str string, err error) {
 	}
 
 	// Если это js - не шаблонизируем
-	if wo.isJs() {
+	if wo.isJs() || wo.Ans.IsJSON {
 		str = string(js)
 		return
 	}

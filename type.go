@@ -41,7 +41,6 @@ type Obj struct {
 	AppendFunc func(*Obj, map[string]interface{}) map[string]interface{}
 	Cache      map[string]interface{}
 	Debug      bool
-	IsJSON     bool
 }
 
 // Answer объект содержащий ответ
@@ -53,6 +52,7 @@ type Answer struct {
 	Exited   bool
 	Code     int
 	Meta     AnswerMeta
+	IsJSON   bool
 }
 
 // AnswerMeta объект содержит заголовок и описание страницы
