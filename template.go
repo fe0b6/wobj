@@ -1,6 +1,7 @@
 package wobj
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -43,6 +44,10 @@ func (wo *Obj) Tmpl() (str string, err error) {
 			log.Println("[error]", err)
 			return
 		}
+
+		js = bytes.Replace(js, []byte("\\u003c"), []byte("<"), -1)
+		js = bytes.Replace(js, []byte("\\u003e"), []byte(">"), -1)
+		js = bytes.Replace(js, []byte("\\u0026"), []byte("&"), -1)
 
 		str = string(js)
 		return
