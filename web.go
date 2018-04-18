@@ -81,8 +81,6 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 			log.Println("[error]", err)
 			return
 		}
-
-		//conn.Close()
 	}()
 
 	params.WsRoute(r, conn)
