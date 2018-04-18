@@ -76,7 +76,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		_ = <-wsChan
 		f := conn.CloseHandler()
-		err = f(418, "server restart")
+		err = f(521, http.StatusText(521))
 		if err != nil {
 			log.Println("[error]", err)
 			return
