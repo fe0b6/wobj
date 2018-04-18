@@ -75,6 +75,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 	// Если выходим
 	go func() {
 		_ = <-wsChan
+		log.Println("go exit")
 		conn.Close()
 	}()
 
