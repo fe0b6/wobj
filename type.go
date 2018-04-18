@@ -14,6 +14,8 @@ const (
 type Param struct {
 	Port         int
 	Route        func(*Obj)
+	WsRoute      func(w http.ResponseWriter, r *http.Request)
+	WsPath       string
 	MaxArgLeg    int
 	YateScript   string
 	NodeScript   string

@@ -16,6 +16,13 @@ func listen(port int) {
 		http.HandleFunc("/", params.ParseRequest)
 	}
 
+	if params.WsRoute != nil {
+		if params.WsPath == "" {
+			params.WsPath = "/ws/"
+		}
+		http.HandleFunc(params.WsPath, params.WsRoute)
+	}
+
 	log.Fatalln("[fatal]", http.ListenAndServe(":"+strconv.Itoa(port), nil))
 }
 
