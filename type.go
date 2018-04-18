@@ -3,6 +3,8 @@ package wobj
 import (
 	"net/http"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -14,7 +16,7 @@ const (
 type Param struct {
 	Port         int
 	Route        func(*Obj)
-	WsRoute      func(w http.ResponseWriter, r *http.Request)
+	WsRoute      func(*http.Request, *websocket.Conn)
 	WsPath       string
 	MaxArgLeg    int
 	YateScript   string

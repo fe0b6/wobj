@@ -5,7 +5,14 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 // Начитаем слушать порт
 func listen(port int) {
@@ -20,7 +27,7 @@ func listen(port int) {
 		if params.WsPath == "" {
 			params.WsPath = "/ws/"
 		}
-		http.HandleFunc(params.WsPath, params.WsRoute)
+		http.HandleFunc(params.WsPath, wsRequest)
 	}
 
 	log.Fatalln("[fatal]", http.ListenAndServe(":"+strconv.Itoa(port), nil))
@@ -43,6 +50,35 @@ func parseRequest(w http.ResponseWriter, r *http.Request) {
 
 	o := &Obj{R: r, W: w, TimeStart: time.Now(), Cache: make(map[string]interface{})}
 	params.Route(o)
+}
+
+func wsRequest(w http.ResponseWriter, r *http.Request) {
+	// Если сервер завершает работу
+	if exited {
+		w.WriteHeader(503)
+		w.Write([]byte(http.StatusText(503)))
+		return
+	}
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("[error]", err)
+		return
+	}
+	defer conn.Close()
+
+	// Отмечаем что начался новый запрос
+	wg.Add(1)
+	// По завершению запроса отмечаем что он закончился
+	defer wg.Done()
+
+	// Если выходим
+	go func() {
+		_ = <-wsChan
+		conn.Close()
+	}()
+
+	params.WsRoute(r, conn)
 }
 
 // SendAnswer - функция отправки ответа
