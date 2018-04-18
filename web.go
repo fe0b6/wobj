@@ -75,8 +75,14 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 	// Если выходим
 	go func() {
 		_ = <-wsChan
-		log.Println("go exit")
-		conn.Close()
+		f := conn.CloseHandler()
+		err = f(418, "server restart")
+		if err != nil {
+			log.Println("[error]", err)
+			return
+		}
+
+		//conn.Close()
 	}()
 
 	params.WsRoute(r, conn)
