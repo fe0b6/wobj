@@ -73,7 +73,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 	defer wg.Done()
 
 	// Если выходим
-	go func() {
+	go func(conn *websocket.Conn) {
 		_ = <-wsChan
 		f := conn.CloseHandler()
 		err = f(521, http.StatusText(521))
@@ -81,7 +81,8 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 			log.Println("[error]", err)
 			return
 		}
-	}()
+		conn.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
+	}(conn)
 
 	params.WsRoute(r, conn)
 }
