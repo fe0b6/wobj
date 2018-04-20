@@ -74,6 +74,8 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Если выходим
 	go func(conn *websocket.Conn) {
+		wg.Add(1)
+		defer wg.Done()
 		_ = <-wsChan
 		f := conn.CloseHandler()
 		err = f(521, http.StatusText(521))
@@ -81,10 +83,9 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 			log.Println("[error]", err)
 			return
 		}
-		conn.Close()
 	}(conn)
 
-	params.WsRoute(r, conn)
+	params.WsRoute(r, conn, wsChan)
 }
 
 // SendAnswer - функция отправки ответа

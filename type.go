@@ -16,7 +16,7 @@ const (
 type Param struct {
 	Port         int
 	Route        func(*Obj)
-	WsRoute      func(*http.Request, *websocket.Conn)
+	WsRoute      func(*http.Request, *websocket.Conn, chan bool)
 	WsPath       string
 	MaxArgLeg    int
 	YateScript   string
