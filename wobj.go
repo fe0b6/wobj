@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 	"sync"
+	"time"
 )
 
 var (
@@ -41,6 +42,11 @@ func waitExit(exitChan chan bool) {
 	close(wsChan)
 
 	log.Println("[info]", "Завершаем работу web сервера")
+
+	for {
+		log.Printf("%+v\n", wg)
+		time.Sleep(time.Second)
+	}
 
 	// Ждем пока все запросы завершатся
 	wg.Wait()
