@@ -81,7 +81,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 			log.Println("[error]", err)
 			return
 		}
-		conn.SetReadDeadline(time.Now().Add(10 * time.Millisecond))
+		conn.Close()
 	}(conn)
 
 	params.WsRoute(r, conn)
