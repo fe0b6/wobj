@@ -1,6 +1,7 @@
 package wobj
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -69,4 +70,10 @@ type AnswerMeta struct {
 type perfomanceData struct {
 	Path     string `json:"path"`
 	Duration int64  `json:"duration"`
+}
+
+// WsData - структура данны хдля веб-сокета
+type WsData struct {
+	Action string          `json:"action"`
+	Data   json.RawMessage `json:"data"`
 }
