@@ -1,6 +1,7 @@
 package wobj
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -50,6 +51,22 @@ func parseRequest(w http.ResponseWriter, r *http.Request) {
 
 	o := &Obj{R: r, W: w, TimeStart: time.Now(), Cache: make(map[string]interface{})}
 	params.Route(o)
+
+	if perfomanceFh != nil {
+		go func(o *Obj) {
+			perfomanceLock.Lock()
+			defer perfomanceLock.Unlock()
+
+			dur := (time.Now().UnixNano() - o.TimeStart.UnixNano()) / 1000000
+			b, err := json.Marshal(perfomanceData{Path: r.URL.Path, Duration: dur})
+			if err != nil {
+				log.Println("[error]", err)
+				return
+			}
+			perfomanceFh.Write(b)
+			perfomanceFh.WriteString("\n")
+		}(o)
+	}
 }
 
 func wsRequest(w http.ResponseWriter, r *http.Request) {

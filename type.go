@@ -14,17 +14,18 @@ const (
 
 // Param это переменные для инициализации класса
 type Param struct {
-	Port         int
-	Route        func(*Obj)
-	WsRoute      func(*http.Request, *websocket.Conn, chan bool)
-	WsPath       string
-	MaxArgLeg    int
-	YateScript   string
-	NodeScript   string
-	Cookie       Cookie
-	CspMap       map[string]string
-	Csp          string
-	ParseRequest func(http.ResponseWriter, *http.Request)
+	Port          int
+	Route         func(*Obj)
+	WsRoute       func(*http.Request, *websocket.Conn, chan bool)
+	WsPath        string
+	MaxArgLeg     int
+	YateScript    string
+	NodeScript    string
+	Cookie        Cookie
+	CspMap        map[string]string
+	Csp           string
+	ParseRequest  func(http.ResponseWriter, *http.Request)
+	PerfomanceLog string
 }
 
 // Cookie - Объект с описание кукисов
@@ -63,4 +64,9 @@ type Answer struct {
 type AnswerMeta struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
+}
+
+type perfomanceData struct {
+	Path     string `json:"path"`
+	Duration int64  `json:"duration"`
 }

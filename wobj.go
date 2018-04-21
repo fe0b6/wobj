@@ -2,15 +2,18 @@ package wobj
 
 import (
 	"log"
+	"os"
 	"strings"
 	"sync"
 )
 
 var (
-	wg     sync.WaitGroup
-	exited bool
-	params Param
-	wsChan chan bool
+	wg             sync.WaitGroup
+	exited         bool
+	params         Param
+	wsChan         chan bool
+	perfomanceFh   *os.File
+	perfomanceLock sync.Mutex
 )
 
 // Init это функция инициализации
@@ -26,6 +29,14 @@ func Init(p Param) (exitChan chan bool) {
 	wsChan = make(chan bool)
 
 	go waitExit(exitChan)
+
+	if p.PerfomanceLog != "" {
+		var err error
+		perfomanceFh, err = os.OpenFile(p.PerfomanceLog, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0640)
+		if err != nil {
+			log.Println("[error]", err)
+		}
+	}
 
 	// Начинаем слушать http-порт
 	go listen(params.Port)
