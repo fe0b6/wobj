@@ -91,6 +91,22 @@ func setCsp() {
 	params.Csp = strings.Join(csp, "; ")
 }
 
+func getCsp(h map[string]string) string {
+	if params.CspMap == nil {
+		return ""
+	}
+
+	csp := []string{}
+	for k, v := range params.CspMap {
+		if _, ok := h[k]; ok {
+			v = v + " " + h[k]
+		}
+		csp = append(csp, k+" "+v)
+	}
+
+	return strings.Join(csp, "; ")
+}
+
 // CheckExit - Проверяем надо ли выходить
 func CheckExit() bool {
 	return exited

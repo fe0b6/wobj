@@ -59,6 +59,7 @@ type Answer struct {
 	Code     int
 	Meta     AnswerMeta
 	IsJSON   bool
+	CspMap   map[string]string
 }
 
 // AnswerMeta объект содержит заголовок и описание страницы

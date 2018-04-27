@@ -148,9 +148,16 @@ func (wo *Obj) SendAnswer() {
 		return
 	}
 
-	// Добавляем csp
-	if params.Csp != "" {
-		wo.W.Header().Add("Content-Security-Policy", params.Csp)
+	if len(wo.Ans.CspMap) == 0 {
+		// Добавляем csp
+		if params.Csp != "" {
+			wo.W.Header().Add("Content-Security-Policy", params.Csp)
+		}
+	} else {
+		csp := getCsp(wo.Ans.CspMap)
+		if csp != "" {
+			wo.W.Header().Add("Content-Security-Policy", csp)
+		}
 	}
 
 	wo.W.Write([]byte(str))
