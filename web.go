@@ -114,12 +114,6 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 		case _ = <-ws.Close:
 		}
 
-		// Закрываем каналы
-		/*	select {
-			case <-ws.Writer:
-			default:
-				close(ws.Writer)
-			}*/
 		select {
 		case <-ws.Reader:
 		default:
@@ -137,8 +131,6 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 			log.Println("[error]", err)
 			return
 		}
-
-		log.Println("ws conn close")
 	}(&ws)
 
 	// Читатель
@@ -149,7 +141,6 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 					log.Println("[error]", err)
 				}
-				log.Println("[error]", err)
 				break
 			}
 
@@ -161,8 +152,6 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 		default:
 			close(ws.Close)
 		}
-
-		log.Println("ws reader close")
 	}(&ws)
 
 	// Писатель
@@ -175,8 +164,6 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 			default:
 				close(ws.Close)
 			}
-
-			log.Println("ws writer close")
 		}()
 
 		for {
@@ -201,7 +188,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 			case <-ticker.C:
 				ws.Conn.SetWriteDeadline(time.Now().Add(wsWriteTimeout))
 				if err := ws.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-					log.Println("[error]", err)
+
 					return
 				}
 			}
