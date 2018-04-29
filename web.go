@@ -116,17 +116,17 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 
 		// Закрываем каналы
 		select {
-		case _, _ = <-ws.Writer:
+		case <-ws.Writer:
 		default:
 			close(ws.Writer)
 		}
 		select {
-		case _, _ = <-ws.Reader:
+		case <-ws.Reader:
 		default:
 			close(ws.Reader)
 		}
 		select {
-		case _, _ = <-ws.Close:
+		case <-ws.Close:
 		default:
 			close(ws.Close)
 		}
@@ -157,7 +157,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		select {
-		case _, _ = <-ws.Close:
+		case <-ws.Close:
 		default:
 			close(ws.Close)
 		}
@@ -171,7 +171,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			ticker.Stop()
 			select {
-			case _, _ = <-ws.Close:
+			case <-ws.Close:
 			default:
 				close(ws.Close)
 			}
