@@ -10,6 +10,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const (
+	wsWriteTimeout = 10 * time.Second
+	wsPongWait     = 60 * time.Second
+	wsPingPeriod   = 50 * time.Second // Должно быть меньше wsPongWait
+)
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -82,27 +88,127 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 		log.Println("[error]", err)
 		return
 	}
-	defer conn.Close()
 
 	// Отмечаем что начался новый запрос
 	wg.Add(1)
-	// По завершению запроса отмечаем что он закончился
-	defer wg.Done()
+
+	ws := WsConn{
+		Conn:   conn,
+		Reader: make(chan []byte, 10),
+		Writer: make(chan []byte, 10),
+		Close:  make(chan bool),
+	}
+
+	// Добавляем время ожидания закрытия канала
+	ws.Conn.SetReadDeadline(time.Now().Add(wsPongWait))
+	ws.Conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(wsPongWait)); return nil })
 
 	// Если выходим
-	go func(conn *websocket.Conn) {
-		wg.Add(1)
+	go func(ws *WsConn) {
 		defer wg.Done()
-		_ = <-wsChan
-		f := conn.CloseHandler()
+		defer ws.Conn.Close()
+
+		// Ждем сигнала на выход
+		select {
+		case _ = <-wsChan:
+		case _ = <-ws.Close:
+		}
+
+		// Закрываем каналы
+		select {
+		case _, _ = <-ws.Writer:
+		default:
+			close(ws.Writer)
+		}
+		select {
+		case _, _ = <-ws.Reader:
+		default:
+			close(ws.Reader)
+		}
+		select {
+		case _, _ = <-ws.Close:
+		default:
+			close(ws.Close)
+		}
+
+		f := ws.Conn.CloseHandler()
 		err = f(521, http.StatusText(521))
 		if err != nil {
 			log.Println("[error]", err)
 			return
 		}
-	}(conn)
 
-	params.WsRoute(r, conn, wsChan)
+		log.Println("ws conn close")
+	}(&ws)
+
+	// Читатель
+	go func(ws *WsConn) {
+		for {
+			_, message, err := ws.Conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					log.Println("[error]", err)
+				}
+				log.Println("[error]", err)
+				break
+			}
+
+			ws.Reader <- message
+		}
+
+		select {
+		case _, _ = <-ws.Close:
+		default:
+			close(ws.Close)
+		}
+
+		log.Println("ws reader close")
+	}(&ws)
+
+	// Писатель
+	go func(ws *WsConn) {
+		ticker := time.NewTicker(wsPingPeriod)
+		defer func() {
+			ticker.Stop()
+			select {
+			case _, _ = <-ws.Close:
+			default:
+				close(ws.Close)
+			}
+
+			log.Println("ws writer close")
+		}()
+
+		for {
+			select {
+			case message, ok := <-ws.Writer:
+				ws.Conn.SetWriteDeadline(time.Now().Add(wsWriteTimeout))
+				if !ok {
+					return
+				}
+
+				w, err := ws.Conn.NextWriter(websocket.TextMessage)
+				if err != nil {
+					log.Println("[error]", err)
+					return
+				}
+				w.Write(message)
+
+				if err := w.Close(); err != nil {
+					log.Println("[error]", err)
+					return
+				}
+			case <-ticker.C:
+				ws.Conn.SetWriteDeadline(time.Now().Add(wsWriteTimeout))
+				if err := ws.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+					log.Println("[error]", err)
+					return
+				}
+			}
+		}
+	}(&ws)
+
+	go params.WsRoute(r, &ws)
 }
 
 // SendAnswer - функция отправки ответа

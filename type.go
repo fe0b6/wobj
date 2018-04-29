@@ -17,7 +17,7 @@ const (
 type Param struct {
 	Port          int
 	Route         func(*Obj)
-	WsRoute       func(*http.Request, *websocket.Conn, chan bool)
+	WsRoute       func(*http.Request, *WsConn)
 	WsPath        string
 	MaxArgLeg     int
 	YateScript    string
@@ -77,4 +77,12 @@ type perfomanceData struct {
 type WsData struct {
 	Action string          `json:"action"`
 	Data   json.RawMessage `json:"data"`
+}
+
+// WsConn - объект коннекта вебсокета
+type WsConn struct {
+	Reader chan []byte
+	Writer chan []byte
+	Close  chan bool
+	Conn   *websocket.Conn
 }
