@@ -115,11 +115,11 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Закрываем каналы
-		select {
-		case <-ws.Writer:
-		default:
-			close(ws.Writer)
-		}
+		/*	select {
+			case <-ws.Writer:
+			default:
+				close(ws.Writer)
+			}*/
 		select {
 		case <-ws.Reader:
 		default:
