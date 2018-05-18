@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -85,7 +86,9 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("[error]", err)
+		if !strings.Contains(err.Error(), "Sec-WebSocket-Key") {
+			log.Println("[error]", err)
+		}
 		return
 	}
 
