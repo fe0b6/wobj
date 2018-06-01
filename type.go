@@ -40,13 +40,14 @@ type Cookie struct {
 
 // Obj основной объект запроса
 type Obj struct {
-	W          http.ResponseWriter
-	R          *http.Request
-	TimeStart  time.Time
-	Ans        Answer
-	AppendFunc func(*Obj, map[string]interface{}) map[string]interface{}
-	Cache      map[string]interface{}
-	Debug      bool
+	W            http.ResponseWriter
+	R            *http.Request
+	TimeStart    time.Time
+	Ans          Answer
+	AppendFunc   func(*Obj, map[string]interface{}) map[string]interface{}
+	Cache        map[string]interface{}
+	Debug        bool
+	ServerTiming bool
 }
 
 // Answer объект содержащий ответ

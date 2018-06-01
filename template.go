@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"time"
 )
 
@@ -95,6 +96,8 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 		log.Println("[debug]", string(js))
 	}
 
+	tn := time.Now()
+
 	if len(js) > params.MaxArgLeg {
 		var f *os.File
 		if f, err = ioutil.TempFile("/tmp/", "yate_tmpl_"); err != nil {
@@ -125,6 +128,11 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 	}
 
 	str = string(out)
+
+	if wo.ServerTiming {
+		t := (time.Now().UnixNano() - tn.UnixNano()) / int64(time.Millisecond)
+		wo.W.Header().Add("Server-Timing", "tmpl;dur="+strconv.FormatInt(t, 10))
+	}
 
 	return
 }
