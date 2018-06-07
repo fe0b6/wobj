@@ -86,7 +86,7 @@ func wsRequest(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		if !strings.Contains(err.Error(), "Sec-WebSocket-Key") {
+		if !strings.Contains(err.Error(), "Sec-WebSocket-Key") && !strings.Contains(err.Error(), "is not using the websocket protocol") {
 			log.Println("[error]", err)
 		}
 		return
