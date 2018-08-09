@@ -97,14 +97,13 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 	}
 
 	tn := time.Now()
-	log.Println(len(js))
 
 	if len(js) > params.MaxArgLeg {
 		var f *os.File
 		if f, err = ioutil.TempFile("/tmp/", "yate_tmpl_"); err != nil {
 			return
 		}
-		//defer os.Remove(f.Name())
+		defer os.Remove(f.Name())
 
 		if _, err = f.Write(js); err != nil {
 			return
@@ -120,9 +119,7 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 		}
 	}
 
-	log.Println(len(js))
-
-	cmd := exec.Command(params.NodeScript, params.YateScript, string(js))
+	cmd := exec.Command(params.NodeScript, "--max_old_space_size=3000", params.YateScript, string(js))
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("[error]", string(out))
