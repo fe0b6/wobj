@@ -97,6 +97,7 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 	}
 
 	tn := time.Now()
+	log.Println(len(js))
 
 	if len(js) > params.MaxArgLeg {
 		var f *os.File
