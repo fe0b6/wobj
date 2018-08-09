@@ -104,7 +104,7 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 		if f, err = ioutil.TempFile("/tmp/", "yate_tmpl_"); err != nil {
 			return
 		}
-		defer os.Remove(f.Name())
+		//defer os.Remove(f.Name())
 
 		if _, err = f.Write(js); err != nil {
 			return
