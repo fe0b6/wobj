@@ -119,6 +119,8 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 		}
 	}
 
+	log.Println(len(js))
+
 	cmd := exec.Command(params.NodeScript, params.YateScript, string(js))
 	out, err := cmd.CombinedOutput()
 	if err != nil {
