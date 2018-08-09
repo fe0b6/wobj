@@ -119,7 +119,7 @@ func (wo *Obj) objToHTML(js []byte) (str string, err error) {
 		}
 	}
 
-	cmd := exec.Command(params.NodeScript, "--max_old_space_size=3000", params.YateScript, string(js))
+	cmd := exec.Command(params.NodeScript, "--max_old_space_size=1000", params.YateScript, string(js))
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("[error]", string(out))
