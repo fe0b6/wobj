@@ -14,6 +14,7 @@ var (
 	wsChan         chan bool
 	perfomanceFh   *os.File
 	perfomanceLock sync.Mutex
+	alwaysJSON     bool
 )
 
 // Init это функция инициализации
@@ -74,6 +75,10 @@ func setDefaultParams(p Param) {
 
 	if params.Cookie.Path == "" {
 		params.Cookie.Path = "/"
+	}
+
+	if params.AlwaysJSON {
+		alwaysJSON = true
 	}
 }
 

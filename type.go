@@ -27,6 +27,7 @@ type Param struct {
 	Csp           string
 	ParseRequest  func(http.ResponseWriter, *http.Request)
 	PerfomanceLog string
+	AlwaysJSON    bool
 }
 
 // Cookie - Объект с описание кукисов

@@ -34,7 +34,7 @@ func (wo *Obj) Tmpl() (str string, err error) {
 	}
 
 	// Если ответ JSON
-	if wo.Ans.IsJSON {
+	if alwaysJSON || wo.Ans.IsJSON {
 		var js []byte
 		if len(wo.Ans.Path) > 0 {
 			js, err = json.Marshal(o)
