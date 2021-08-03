@@ -24,12 +24,21 @@ var upgrader = websocket.Upgrader{
 
 // Начитаем слушать порт
 func listen(port int) {
+	var fn http.Handler
 
 	if params.ParseRequest == nil {
-		http.HandleFunc("/", parseRequest)
+		fn = http.HandlerFunc(parseRequest)
 	} else {
-		http.HandleFunc("/", params.ParseRequest)
+		fn = http.HandlerFunc(params.ParseRequest)
 	}
+
+	if params.Middlewares != nil {
+		for _, md := range params.Middlewares {
+			fn = md(fn)
+		}
+	}
+
+	http.Handle("/", fn)
 
 	if params.WsRoute != nil {
 		if params.WsPath == "" {

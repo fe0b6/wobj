@@ -26,6 +26,7 @@ type Param struct {
 	CspMap        map[string]string
 	Csp           string
 	ParseRequest  func(http.ResponseWriter, *http.Request)
+	Middlewares   []func(next http.Handler) http.Handler
 	PerfomanceLog string
 	AlwaysJSON    bool
 }
